@@ -4,7 +4,6 @@ import connectDB from "@/lib/mongodb";
 import { v2 as cloudinary } from "cloudinary";
 
 import { Event } from "@/app/database";
-import { error } from "console";
 
 export async function POST(req: NextRequest) {
   try {
@@ -31,6 +30,9 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
 
+    let tags = JSON.parse(formData.get('tags') as string);
+    let agenda = JSON.parse(formData.get('agenda') as string);
+    
     const arrayBuffer = await file.arrayBuffer();
     const buffer = Buffer.from(arrayBuffer);
 
@@ -51,6 +53,8 @@ export async function POST(req: NextRequest) {
 
     const createdEvent = await Event.create({
       ...event,
+      tags:tags,
+      agenda:agenda,
     });
 
     return NextResponse.json(
@@ -69,17 +73,20 @@ export async function POST(req: NextRequest) {
   }
 }
 
-
-
 export async function GET() {
-  try{
+  try {
     await connectDB();
 
-    const events= await Event.find().sort({createdAt:-1});
+    const events = await Event.find().sort({ createdAt: -1 });
 
-    return NextResponse.json({message:'Events fetched successfully', events},{status:200});
-
-  }catch(e){
-    return NextResponse.json({message:'Event Fetching Failed ', error:e},{status:500});
+    return NextResponse.json(
+      { message: "Events fetched successfully", events },
+      { status: 200 }
+    );
+  } catch (e) {
+    return NextResponse.json(
+      { message: "Event Fetching Failed ", error: e },
+      { status: 500 }
+    );
   }
 }

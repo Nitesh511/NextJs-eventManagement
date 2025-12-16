@@ -1,10 +1,14 @@
 import Image from "next/image";
 import ExploreBtn from "./components/ExploreBtn";
 import EventCard from "./components/EventCard";
-import events from "@/lib/constants";
+import { IEvent } from "./database";
 
 
-export default function Home() {
+const Page=async ()=> {
+
+  const reponse= await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/events`, );
+
+  const {events}= await reponse.json();
   return (
     <section>
       <h1 className="text-center">
@@ -21,8 +25,8 @@ export default function Home() {
         <h3>Featured Events</h3>
 
         <ul className="events list-none">
-          {events.map((event, o) => (
-            <li key={o}>
+          {events && events.length>0 &&events.map((event:IEvent) => (
+            <li key={event.title}>
               <EventCard {...event} />
             </li>
           ))}
@@ -31,3 +35,6 @@ export default function Home() {
     </section>
   );
 }
+
+
+export default Page;
